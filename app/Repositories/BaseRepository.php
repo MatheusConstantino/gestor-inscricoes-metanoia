@@ -20,6 +20,11 @@ class BaseRepository implements BaseRepositoryInterface
         return $this->model->with($relations)->get($columns);
     }
 
+    public function paginate(int $perPage = 15, array $columns = ['*'], array $relations = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return $this->model->with($relations)->paginate($perPage, $columns);
+    }
+
     public function find(int $id, array $columns = ['*'], array $relations = []): ?Model
     {
         return $this->model->with($relations)->find($id, $columns);
