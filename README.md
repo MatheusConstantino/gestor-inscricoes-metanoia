@@ -1,61 +1,62 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Gestor de Grupo de Oração
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este é um sistema de gerenciamento para grupos de oração, projetado para ser uma solução white-label robusta e escalável. O objetivo é fornecer uma ferramenta completa para administrar membros, ministérios, eventos e a comunicação interna de uma organização religiosa.
 
-## About Laravel
+## Visão Geral
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+O projeto está sendo construído com o **Laravel 12**, seguindo as melhores práticas de desenvolvimento de software, incluindo uma arquitetura bem definida com camadas de Serviço e Repositório (Service and Repository Patterns), e um forte foco em código limpo e testável.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Arquitetura e Design
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend:** Laravel 12
+- **Frontend (Painel Admin):** AdminLTE (a ser implementado)
+- **Banco de Dados:** Suporte para MySQL, PostgreSQL e SQLite.
+- **Padrões de Projeto:**
+  - **Repository Pattern:** Para abstrair a camada de acesso a dados, tornando o código mais limpo, testável e de fácil manutenção.
+  - **Service Layer:** Para encapsular a lógica de negócio, mantendo os controllers enxutos e focados em lidar com as requisições HTTP.
+- **Qualidade de Código:** Foco em PSR-12, código limpo e documentado.
 
-## Learning Laravel
+## Estrutura do Banco de Dados
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+O sistema foi modelado para suportar múltiplas organizações (multi-empresa), com as seguintes entidades principais:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Organizations:** A entidade central que permite o funcionamento multi-empresa.
+- **Users:** Usuários administradores do sistema (Admin, Gestor).
+- **Members:** Membros do grupo de oração (Servos, Participantes, etc.).
+- **Ministries:** Os ministérios aos quais os membros podem pertencer.
+- **Events:** Eventos, reuniões e formações organizados pelo grupo.
+- **Event Attendance:** Controle de presença dos membros nos eventos.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Como Começar (Ambiente de Desenvolvimento)
 
-## Laravel Sponsors
+1.  **Clone o repositório:**
+    ```bash
+    git clone [URL_DO_REPOSITORIO]
+    cd gestor-incricoes-app
+    ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2.  **Instale as dependências:**
+    ```bash
+    composer install
+    npm install
+    ```
 
-### Premium Partners
+3.  **Configure o ambiente:**
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+4.  **Configure o banco de dados** no arquivo `.env` e execute as migrations:
+    ```bash
+    php artisan migrate
+    ```
 
-## Contributing
+5.  **Inicie o servidor de desenvolvimento:**
+    ```bash
+    php artisan serve
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Próximos Passos
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Consulte o TODO list para ver o progresso atual e os próximos passos no desenvolvimento.
