@@ -17,7 +17,7 @@ class OrganizationService
 
     public function getAllOrganizations()
     {
-        return $this->organizationRepository->all();
+        return $this->organizationRepository->paginate();
     }
 
     public function createOrganization(array $data)
@@ -32,5 +32,28 @@ class OrganizationService
         }
     }
 
-    // Outros métodos de serviço (update, delete, find, etc.)
+    public function findOrganization(int $id)
+    {
+        return $this->organizationRepository->find($id);
+    }
+
+    public function updateOrganization(int $id, array $data)
+    {
+        try {
+            return $this->organizationRepository->update($id, $data);
+        } catch (Exception $e) {
+            Log::error('Erro ao atualizar organização: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function deleteOrganization(int $id)
+    {
+        try {
+            return $this->organizationRepository->delete($id);
+        } catch (Exception $e) {
+            Log::error('Erro ao excluir organização: ' . $e->getMessage());
+            return false;
+        }
+    }
 }
