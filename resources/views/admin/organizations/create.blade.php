@@ -22,9 +22,6 @@
 
 @section('content')
     <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Formulário de Criação</h3>
-        </div>
         <form id="createForm">
             @include('admin.organizations._form', ['buttonText' => 'Salvar'])
         </form>

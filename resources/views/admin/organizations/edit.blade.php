@@ -22,9 +22,6 @@
 
 @section('content')
     <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Formulário de Edição</h3>
-        </div>
         <form id="editForm">
             @method('PUT')
             @include('admin.organizations._form', ['organization' => $organization, 'buttonText' => 'Atualizar'])

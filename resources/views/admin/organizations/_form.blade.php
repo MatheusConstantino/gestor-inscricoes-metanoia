@@ -20,6 +20,6 @@
     </div>
 </div>
 <div class="card-footer">
-    <a href="{{ route('admin.organizations.index') }}" class="btn btn-secondary">Cancelar</a>
-    <button type="submit" class="btn btn-primary float-right">{{ $buttonText ?? 'Salvar' }}</button>
+    <a href="{{ route('admin.organizations.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+    <button type="submit" class="btn btn-outline-primary float-right">{{ $buttonText ?? 'Salvar' }}</button>
 </div>

@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="col-2">
-                    <a href="#" class="text-muted mr-3 edit-btn" data-id="{{ $organization->id }}" data-toggle="modal" data-target="#editModal" title="Editar"><i class="fas fa-pencil-alt"></i></a>
+                    <a href="{{ route('admin.organizations.edit', $organization) }}" class="text-muted mr-3" title="Editar"><i class="fas fa-pencil-alt"></i></a>
                     <a href="#" class="text-danger delete-btn" data-id="{{ $organization->id }}" title="Excluir"><i class="fas fa-trash"></i></a>
                 </div>
             </div>
