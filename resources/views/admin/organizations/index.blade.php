@@ -3,51 +3,33 @@
 @section('title', 'Organizações')
 
 @section('content_header')
-    <h1>
-        Organizações
-        <a href="#" class="btn btn-primary float-right" data-toggle="modal" data-target="#createModal">Adicionar Nova</a>
-    </h1>
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1>Organizações</h1>
+        </div>
+        <div class="col-sm-6">
+            @php
+                $breadcrumbItems = [
+                    ['name' => 'Dashboard', 'url' => route('admin.dashboard')],
+                    ['name' => 'Organizações', 'url' => '#']
+                ];
+            @endphp
+            <x-breadcrumb :items="$breadcrumbItems" />
+        </div>
+    </div>
 @stop
 
 @section('content')
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Lista de Organizações</h3>
-        </div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th style="width: 10px">#</th>
-                        <th>Nome</th>
-                        <th>Slug</th>
-                        <th>Status</th>
-                        <th style="width: 150px">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($organizations as $organization)
-                        <tr>
-                            <td>{{ $organization->id }}</td>
-                            <td>{{ $organization->name }}</td>
-                            <td>{{ $organization->slug }}</td>
-                            <td>{{ $organization->status }}</td>
-                            <td>
-                                <button class="btn btn-info btn-sm edit-btn" data-id="{{ $organization->id }}" data-toggle="modal" data-target="#editModal">Editar</button>
-                                <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $organization->id }}">Excluir</button>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5">Nenhuma organização encontrada.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        <div class="card-footer clearfix">
-            {{ $organizations->links() }}
-        </div>
+    <div class="d-flex justify-content-end mb-3">
+        <a href="#" class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#createModal"><i class="fas fa-plus"></i> Adicionar Nova</a>
+    </div>
+
+    <div id="organizations-table">
+        @include('admin.organizations._table')
+    </div>
+
+    <div class="d-flex justify-content-center">
+        {{ $organizations->links() }}
     </div>
 
     <!-- Create Modal -->
@@ -66,15 +48,17 @@
                         <div class="form-group">
                             <label for="name">Nome</label>
                             <input type="text" class="form-control" id="name" name="name" required>
+                            <span class="text-danger" id="name_error"></span>
                         </div>
                         <div class="form-group">
                             <label for="slug">Slug</label>
                             <input type="text" class="form-control" id="slug" name="slug" required>
+                            <span class="text-danger" id="slug_error"></span>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
+                        <button type="submit" class="btn btn-primary" id="createSubmitBtn">Salvar</button>
                     </div>
                 </form>
             </div>
@@ -99,15 +83,17 @@
                         <div class="form-group">
                             <label for="edit_name">Nome</label>
                             <input type="text" class="form-control" id="edit_name" name="name" required>
+                            <span class="text-danger" id="edit_name_error"></span>
                         </div>
                         <div class="form-group">
                             <label for="edit_slug">Slug</label>
                             <input type="text" class="form-control" id="edit_slug" name="slug" required>
+                            <span class="text-danger" id="edit_slug_error"></span>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-primary">Atualizar</button>
+                        <button type="submit" class="btn btn-primary" id="editSubmitBtn">Atualizar</button>
                     </div>
                 </form>
             </div>
@@ -125,8 +111,29 @@
                 timer: 3000
             });
 
+            function reloadTable() {
+                $.get('{{ route("admin.organizations.index") }}', function (data) {
+                    $('#organizations-table').html(data);
+                });
+            }
+
+            // Clear validation errors on modal close
+            $('#createModal, #editModal').on('hidden.bs.modal', function () {
+                $('.text-danger').text('');
+                $('input').removeClass('is-invalid');
+                $('#createForm')[0].reset();
+                $('#editForm')[0].reset();
+            });
+
             $('#createForm').on('submit', function (e) {
                 e.preventDefault();
+                let btn = $('#createSubmitBtn');
+                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Salvando...');
+
+                // Clear previous errors
+                $('.text-danger').text('');
+                $('input').removeClass('is-invalid');
+
                 $.ajax({
                     url: '{{ route("admin.organizations.store") }}',
                     method: 'POST',
@@ -135,15 +142,30 @@
                         $('#createModal').modal('hide');
                         Toast.fire({
                             type: 'success',
-                            title: 'Organização criada com sucesso!'
+                            title: response.message
                         });
-                        location.reload();
+                        reloadTable();
                     },
                     error: function (xhr) {
-                        Toast.fire({
-                            type: 'error',
-                            title: 'Erro ao criar organização.'
-                        });
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            if (errors.name) {
+                                $('#name').addClass('is-invalid');
+                                $('#name_error').text(errors.name[0]);
+                            }
+                            if (errors.slug) {
+                                $('#slug').addClass('is-invalid');
+                                $('#slug_error').text(errors.slug[0]);
+                            }
+                        } else {
+                            Toast.fire({
+                                type: 'error',
+                                title: 'Erro ao criar organização.'
+                            });
+                        }
+                    },
+                    complete: function () {
+                        btn.prop('disabled', false).html('Salvar');
                     }
                 });
             });
@@ -160,6 +182,13 @@
             $('#editForm').on('submit', function (e) {
                 e.preventDefault();
                 let id = $('#edit_id').val();
+                let btn = $('#editSubmitBtn');
+                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Atualizando...');
+
+                // Clear previous errors
+                $('.text-danger').text('');
+                $('input').removeClass('is-invalid');
+
                 $.ajax({
                     url: '/admin/organizations/' + id,
                     method: 'PUT',
@@ -168,20 +197,36 @@
                         $('#editModal').modal('hide');
                         Toast.fire({
                             type: 'success',
-                            title: 'Organização atualizada com sucesso!'
+                            title: response.message
                         });
-                        location.reload();
+                        reloadTable();
                     },
                     error: function (xhr) {
-                        Toast.fire({
-                            type: 'error',
-                            title: 'Erro ao atualizar organização.'
-                        });
+                        if (xhr.status === 422) {
+                            let errors = xhr.responseJSON.errors;
+                            if (errors.name) {
+                                $('#edit_name').addClass('is-invalid');
+                                $('#edit_name_error').text(errors.name[0]);
+                            }
+                            if (errors.slug) {
+                                $('#edit_slug').addClass('is-invalid');
+                                $('#edit_slug_error').text(errors.slug[0]);
+                            }
+                        } else {
+                            Toast.fire({
+                                type: 'error',
+                                title: 'Erro ao atualizar organização.'
+                            });
+                        }
+                    },
+                    complete: function () {
+                        btn.prop('disabled', false).html('Atualizar');
                     }
                 });
             });
 
-            $('.delete-btn').on('click', function (e) {
+            // Use event delegation for dynamically added elements
+            $(document).on('click', '.delete-btn', function (e) {
                 e.preventDefault();
                 let id = $(this).data('id');
                 Swal.fire({
@@ -204,9 +249,9 @@
                             success: function (response) {
                                 Toast.fire({
                                     type: 'success',
-                                    title: 'Organização excluída com sucesso!'
+                                    title: response.message
                                 });
-                                location.reload();
+                                reloadTable();
                             },
                             error: function (xhr) {
                                 Toast.fire({
@@ -217,6 +262,34 @@
                         });
                     }
                 })
+            });
+
+            $(document).on('change', '.status-toggle', function() {
+                let id = $(this).data('id');
+                let status = $(this).is(':checked');
+
+                $.ajax({
+                    url: `/admin/organizations/${id}/toggle-status`,
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        status: status
+                    },
+                    success: function(response) {
+                        Toast.fire({
+                            type: 'success',
+                            title: response.message
+                        });
+                    },
+                    error: function(xhr) {
+                        Toast.fire({
+                            type: 'error',
+                            title: 'Erro ao atualizar status.'
+                        });
+                        // Revert the toggle on error
+                        $(this).prop('checked', !status);
+                    }.bind(this)
+                });
             });
         });
     </script>

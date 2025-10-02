@@ -21,9 +21,12 @@ class OrganizationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $organizations = $this->organizationService->getAllOrganizations();
+        if ($request->ajax()) {
+            return view('admin.organizations._table', compact('organizations'))->render();
+        }
         return view('admin.organizations.index', compact('organizations'));
     }
 
@@ -43,10 +46,10 @@ class OrganizationController extends Controller
         $organization = $this->organizationService->createOrganization($request->validated());
 
         if ($organization) {
-            return response()->json(['success' => true]);
+            return response()->json(['success' => true, 'message' => 'Organização criada com sucesso!']);
         }
 
-        return response()->json(['success' => false], 500);
+        return response()->json(['success' => false, 'message' => 'Erro ao criar organização.'], 500);
     }
 
     /**
@@ -73,10 +76,10 @@ class OrganizationController extends Controller
         $updated = $this->organizationService->updateOrganization($organization->id, $request->validated());
 
         if ($updated) {
-            return response()->json(['success' => true]);
+            return response()->json(['success' => true, 'message' => 'Organização atualizada com sucesso!']);
         }
 
-        return response()->json(['success' => false], 500);
+        return response()->json(['success' => false, 'message' => 'Erro ao atualizar organização.'], 500);
     }
 
     /**
@@ -87,9 +90,21 @@ class OrganizationController extends Controller
         $deleted = $this->organizationService->deleteOrganization($organization->id);
 
         if ($deleted) {
-            return response()->json(['success' => true]);
+            return response()->json(['success' => true, 'message' => 'Organização excluída com sucesso!']);
         }
 
-        return response()->json(['success' => false], 500);
+        return response()->json(['success' => false, 'message' => 'Erro ao excluir organização.'], 500);
+    }
+
+    public function toggleStatus(Request $request, Organization $organization)
+    {
+        $newStatus = $request->input('status') === 'true' ? 'ativo' : 'inativo';
+        $updated = $this->organizationService->updateOrganization($organization->id, ['status' => $newStatus]);
+
+        if ($updated) {
+            return response()->json(['success' => true, 'message' => 'Status atualizado com sucesso!', 'newStatus' => $newStatus]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Erro ao atualizar status.'], 500);
     }
 }
