@@ -35,7 +35,7 @@ class OrganizationController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.organizations.create');
     }
 
     /**
@@ -65,7 +65,7 @@ class OrganizationController extends Controller
      */
     public function edit(Organization $organization)
     {
-        return response()->json($organization);
+        return view('admin.organizations.edit', compact('organization'));
     }
 
     /**
